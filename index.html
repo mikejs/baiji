@@ -74,6 +74,7 @@
     } else if (loc.match(/^#leg_/)) {
       var id = loc.substr(5);
       show_legislator(id, function() {
+        $("#legs a:first").focus();
         $("#legs").hide('slow');
         $("#leg_info").show();
       });
