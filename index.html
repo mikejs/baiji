@@ -5,6 +5,8 @@
   <script type="text/javascript" src="jquery.js"></script>
   <script type="text/javascript" src="jquery.ba-bbq.js"></script>
   <script type="text/javascript">
+  var initialized = false;
+  
   function api_url(method, query) {
     var url = "http://openstates.sunlightlabs.com/api/v1/" + method;
     if (query) {
@@ -58,6 +60,18 @@
       callback();
     });
   }
+  
+  function activate(id) {
+    if (!initialized) {
+      initialized = true;
+      return;
+    }
+
+    $(".active").fadeOut(100, function () {
+      $(".active").removeClass("active");
+      $(id).addClass("active").fadeIn(100);
+    });
+  }
 
   $(window).ready(function () {
     $(window).bind('hashchange', function(e) {
@@ -69,23 +83,16 @@
     
       if (loc == '#upper' || loc == '#lower') {
         load_legislators("tx", loc.substr(1), function() {
-          //$("#nav a:first").focus();
-          $("#nav").hide();
-          $("#leg_info").hide();
-          $("#legs").show();
+          activate("#legs");
         });
       } else if (loc.match(/^#leg_/)) {
         var id = loc.substr(5);
         show_legislator(id, function() {
           $("#legs a:first").focus();
-          $("#legs").hide();
-          $("#nav").hide();
-          $("#leg_info").show();
+          activate("#leg_info");
         });
       } else {
-        $("#legs").hide();
-        $("#leg_info").hide();
-        $(loc).show();
+        activate(loc);
       }
     }).trigger('hashchange');
   });
@@ -98,7 +105,7 @@
     <h1><a href="">Open State Project</a></h1>
   </div>
   <div id="content">
-    <ul id="nav">
+    <ul id="nav" class="active">
       <li><a href="#_upper">Senators</a></li>
       <li><a href="#_lower">Assembly Members</a></li>
       <li><a href="">Bills</a></li>
