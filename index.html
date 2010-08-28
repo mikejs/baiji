@@ -6,55 +6,55 @@
   <script type="text/javascript" src="jquery.ba-bbq.js"></script>
   <script type="text/javascript">
   function api_url(method, query) {
-    return "http://openstates.sunlightlabs.com/api/v1/" + method + "/?" + query + "&apikey=sunlight9";
+    var url = "http://openstates.sunlightlabs.com/api/v1/" + method;
+    if (query) {
+      url += "/?" + query + "&apikey=sunlight9";
+    } else {
+      url += "/?apikey=sunlight9";
+    }
+    return url;
+  }
+  
+  function cached_jsonp(url, callback) {
+    var data = JSON.parse(localStorage.getItem(url));
+    if (!data) {
+      $.ajax({
+        url: url,
+        dataType: 'jsonp',
+        success: function (data) {
+          localStorage.setItem(url, JSON.stringify(data));
+          cached_jsonp(url, callback);
+        }});
+    } else {
+      callback(data);
+    }
   }
   
   function load_legislators(state, callback) {    
-    var legs = JSON.parse(localStorage.getItem("leg_list:" + state));
-    if (!legs) {
-      $.ajax({
-        url: api_url("legislators", "state=" + state),
-        dataType: 'jsonp',
-        success: function (data) {
-          localStorage.setItem("leg_list:" + state, JSON.stringify(data));
-          load_legislators(state, callback);
-        }});
-      return;
-    }
-        
-    for (var i in legs) {
-      leg = legs[i];
-      if (!leg.photo_url) {
-        leg.photo_url = 'no_photo_male.png';
+    cached_jsonp(api_url("legislators", "state=" + state), function (legs) {
+      for (var i in legs) {
+        leg = legs[i];
+        if (!leg.photo_url) {
+          leg.photo_url = 'no_photo_male.png';
+        }
+        $("#legs").append('<li><a href="#_leg_' + leg['id'] + '"><img class="leg_thumb" src="' + leg.photo_url + '" /> ' + leg['full_name'] + '</a></li>');
       }
-      $("#legs").append('<li><a href="#_leg_' + leg['id'] + '"><img class="leg_thumb" src="' + leg.photo_url + '" /> ' + leg['full_name'] + '</a></li>');
-    }
-    callback();
+      callback();
+    });
   }
   
   function show_legislator(id, callback) {
-    var leg = JSON.parse(localStorage.getItem(id));
-    if (!leg) {
-      $.ajax({
-        url: api_url("legislators/" + id),
-        dataType: 'jsonp',
-        success: function (data) {
-          localStorage.setItem(id, JSON.stringify(data));
-          show_legislator(id, callback);
-        }
-      });
-      return;
-    }
+    cached_jsonp(api_url("legislators/" + id), function (leg) {
+      $("#leg_img").attr('src', leg.photo_url);
+      $("#leg_name").text(leg.full_name);
 
-    $("#leg_img").attr('src', leg.photo_url);
-    $("#leg_name").text(leg.full_name);
-    
-    var role = leg.roles[0];
-    
-    $("#leg_party").text(role.party);
-    $("#leg_chamber").text(role.chamber);
-    $("#leg_district").text(role.district);
-    callback();
+      var role = leg.roles[0];
+
+      $("#leg_party").text(role.party);
+      $("#leg_chamber").text(role.chamber);
+      $("#leg_district").text(role.district);
+      callback();
+    });
   }
   
   $(window).bind('hashchange', function(e) {
@@ -71,7 +71,7 @@
         $("#leg_info").hide('slow');
         $(loc).show();
       });
-    } else if (loc.match(/^#leg_.*/)) {
+    } else if (loc.match(/^#leg_/)) {
       var id = loc.substr(5);
       show_legislator(id, function() {
         $("#legs").hide('slow');
