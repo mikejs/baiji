@@ -66,10 +66,10 @@
       initialized = true;
       return;
     }
-
-    $(".active").fadeOut(100, function () {
+    
+    $(".active").hide(0, function() { 
       $(".active").removeClass("active");
-      $(id).addClass("active").fadeIn(100);
+      $(id).addClass("active").show(0);
     });
   }
 
