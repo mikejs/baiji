@@ -30,8 +30,10 @@
     }
   }
   
-  function load_legislators(state, callback) {    
-    cached_jsonp(api_url("legislators", "state=" + state), function (legs) {
+  function load_legislators(state, chamber, callback) {
+    cached_jsonp(api_url("legislators", "state=" + state + "&chamber=" + chamber),
+    function (legs) {
+      $("#legs").empty();
       for (var i in legs) {
         leg = legs[i];
         if (!leg.photo_url) {
@@ -64,12 +66,12 @@
       loc = '#nav';
     }
     
-    if (loc == '#legs') {
-      load_legislators("tx", function() {
-        $("#leg_link").focus();
+    if (loc == '#upper' || loc == '#lower') {
+      load_legislators("tx", loc.substr(1), function() {
+        //$("#nav a:first").focus();
         $("#nav").hide('slow');
         $("#leg_info").hide('slow');
-        $(loc).show();
+        $("#legs").show();
       });
     } else if (loc.match(/^#leg_/)) {
       var id = loc.substr(5);
@@ -96,7 +98,8 @@
   </div>
   <div id="content">
     <ul id="nav">
-      <li><a id="leg_link" href="#_legs">Legislators</a></li>
+      <li><a href="#_upper">Senators</a></li>
+      <li><a href="#_lower">Assembly Members</a></li>
       <li><a href="">Bills</a></li>
     </ul>
 
