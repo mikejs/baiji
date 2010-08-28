@@ -16,7 +16,7 @@
   }
   
   function cached_jsonp(url, callback) {
-    var data = JSON.parse(localStorage.getItem(url));
+    var data = localStorage.getItem(url);
     if (!data) {
       $.ajax({
         url: url,
@@ -26,7 +26,7 @@
           cached_jsonp(url, callback);
         }});
     } else {
-      callback(data);
+      callback(JSON.parse(data));
     }
   }
   
