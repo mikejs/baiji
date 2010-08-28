@@ -58,36 +58,37 @@
       callback();
     });
   }
-  
-  $(window).bind('hashchange', function(e) {
-    var loc = location.hash.replace("#_", "#");
+
+  $(window).ready(function () {
+    $(window).bind('hashchange', function(e) {
+      var loc = location.hash.replace("#_", "#");
+
+      if (loc == "" || loc == "#") {
+        loc = '#nav';
+      }
     
-    if (loc == "" || loc == "#") {
-      loc = '#nav';
-    }
-    
-    if (loc == '#upper' || loc == '#lower') {
-      load_legislators("tx", loc.substr(1), function() {
-        //$("#nav a:first").focus();
-        $("#nav").hide('slow');
-        $("#leg_info").hide('slow');
-        $("#legs").show();
-      });
-    } else if (loc.match(/^#leg_/)) {
-      var id = loc.substr(5);
-      show_legislator(id, function() {
-        $("#legs a:first").focus();
-        $("#legs").hide('slow');
-        $("#leg_info").show();
-      });
-    } else {
-      $("#legs").hide('slow');
-      $("#leg_info").hide('slow');
-      $(loc).show();
-    }
+      if (loc == '#upper' || loc == '#lower') {
+        load_legislators("tx", loc.substr(1), function() {
+          //$("#nav a:first").focus();
+          $("#nav").hide();
+          $("#leg_info").hide();
+          $("#legs").show();
+        });
+      } else if (loc.match(/^#leg_/)) {
+        var id = loc.substr(5);
+        show_legislator(id, function() {
+          $("#legs a:first").focus();
+          $("#legs").hide();
+          $("#nav").hide();
+          $("#leg_info").show();
+        });
+      } else {
+        $("#legs").hide();
+        $("#leg_info").hide();
+        $(loc).show();
+      }
+    }).trigger('hashchange');
   });
-  
-  $(window).trigger('hashchange');
   </script>
   <meta name="viewport" content="user-scalable=no, width=device-width" />
   <title>Open State Project</title>
