@@ -65,6 +65,9 @@
     cached_jsonp(api_url("bills", "state=" + state + "&q=" + query), function (bills) {
       $("#bills").empty();
       for (var i in bills) {
+        if (i >= 50) {
+          break;
+        }
         var bill = bills[i];
         
         $("#bills").append("<li><a>" + bill.bill_id + ": " + bill.title + "</a></li>");
