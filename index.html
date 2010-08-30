@@ -61,6 +61,18 @@
     });
   }
   
+  function find_bills(state, query, callback) {
+    cached_jsonp(api_url("bills", "state=" + state + "&q=" + query), function (bills) {
+      $("#bills").empty();
+      for (var i in bills) {
+        var bill = bills[i];
+        
+        $("#bills").append("<li><a>" + bill.bill_id + ": " + bill.title + "</a></li>");
+      }
+      callback();
+    });
+  }
+  
   function activate(id) {
     if (!initialized) {
       initialized = true;
@@ -91,6 +103,11 @@
           $("#legs a:first").focus();
           activate("#leg_info");
         });
+      } else if (loc == "#bills") {
+        find_bills("tx", $("#bill_query").val(), function() {
+          $("#legs a:first").focus();
+          activate("#bills");
+        });
       } else {
         activate(loc);
       }
@@ -98,6 +115,7 @@
   });
   </script>
   <meta name="viewport" content="user-scalable=no, width=device-width" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Open State Project</title>
 </head>
 <body>
@@ -108,7 +126,15 @@
     <ul id="nav" class="active">
       <li><a href="#_upper">Senators</a></li>
       <li><a href="#_lower">Assembly Members</a></li>
-      <li><a href="">Bills</a></li>
+      <li><a href="#_bill_search">Bill Search</a></li>
+    </ul>
+    
+    <div id="bill_search" style="display:none;">
+      <h2>Search:</h2> <input id="bill_query" type="text" />
+      <a href="#_bills"><button>Go</button></a>
+    </div>
+
+    <ul id="bills" style="display:none;">
     </ul>
 
     <ul id="legs" style="display:none;">
