@@ -150,3 +150,8 @@ html { -webkit-font-smoothing: antialiased; }
     top: 120px;
     width: 200px;
 }
+
+#about {
+    margin: 1em 1em;
+    font-size: 17px;
+}
