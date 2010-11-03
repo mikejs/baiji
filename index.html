@@ -1,164 +1,71 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" type="text/css" href="mobile.css" />
-  <script type="text/javascript" src="jquery.js"></script>
-  <script type="text/javascript" src="jquery.ba-bbq.js"></script>
-  <script type="text/javascript">
-  var initialized = false;
-  
-  function api_url(method, query) {
-    var url = "http://openstates.sunlightlabs.com/api/v1/" + method;
-    if (query) {
-      url += "/?" + query + "&apikey=sunlight9";
-    } else {
-      url += "/?apikey=sunlight9";
-    }
-    return url;
-  }
-  
-  function cached_jsonp(url, callback) {
-    var data = localStorage.getItem(url);
-    if (!data) {
-      $.ajax({
-        url: url,
-        dataType: 'jsonp',
-        success: function (data) {
-          localStorage.setItem(url, JSON.stringify(data));
-          cached_jsonp(url, callback);
-        }});
-    } else {
-      callback(JSON.parse(data));
-    }
-  }
-  
-  function load_legislators(state, chamber, callback) {
-    cached_jsonp(api_url("legislators", "state=" + state + "&chamber=" + chamber),
-    function (legs) {
-      $("#legs").empty();
-      for (var i in legs) {
-        leg = legs[i];
-        if (!leg.photo_url) {
-          leg.photo_url = 'no_photo_male.png';
-        }
-        $("#legs").append('<li><a href="#_leg_' + leg['id'] + '"><img class="leg_thumb" src="' + leg.photo_url + '" /> ' + leg['full_name'] + '</a></li>');
-      }
-      callback();
-    });
-  }
-  
-  function show_legislator(id, callback) {
-    cached_jsonp(api_url("legislators/" + id), function (leg) {
-      $("#leg_img").attr('src', leg.photo_url);
-      $("#leg_name").text(leg.full_name);
-
-      var role = leg.roles[0];
-
-      $("#leg_party").text(role.party);
-      $("#leg_chamber").text(role.chamber);
-      $("#leg_district").text(role.district);
-      callback();
-    });
-  }
-  
-  function find_bills(state, query, callback) {
-    cached_jsonp(api_url("bills", "state=" + state + "&q=" + query), function (bills) {
-      $("#bills").empty();
-      for (var i in bills) {
-        if (i >= 50) {
-          break;
-        }
-        var bill = bills[i];
-        
-        $("#bills").append("<li><a>" + bill.bill_id + ": " + bill.title + "</a></li>");
-      }
-      callback();
-    });
-  }
-  
-  function activate(id) {
-    if (!initialized) {
-      initialized = true;
-      return;
-    }
-    
-    $(".active").hide(0, function() { 
-      $(".active").removeClass("active");
-      $(id).addClass("active").show(0);
-    });
-  }
-
-  $(window).ready(function () {
-    $(window).bind('hashchange', function(e) {
-      var loc = location.hash.replace("#_", "#");
-
-      if (loc == "" || loc == "#") {
-        loc = '#nav';
-      }
-    
-      if (loc == '#upper' || loc == '#lower') {
-        load_legislators("tx", loc.substr(1), function() {
-          activate("#legs");
-        });
-      } else if (loc.match(/^#leg_/)) {
-        var id = loc.substr(5);
-        show_legislator(id, function() {
-          $("#legs a:first").focus();
-          activate("#leg_info");
-        });
-      } else if (loc == "#bills") {
-        find_bills("tx", $("#bill_query").val(), function() {
-          $("#legs a:first").focus();
-          activate("#bills");
-        });
-      } else {
-        activate(loc);
-      }
-    }).trigger('hashchange');
-  });
-  </script>
-  <meta name="viewport" content="user-scalable=no, width=device-width" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>Open State Project</title>
-</head>
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>Page Title</title> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a1/jquery.mobile-1.0a1.min.css" />
+	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.0a1/jquery.mobile-1.0a1.min.js"></script>
+	<script src="http://documentcloud.github.com/underscore/underscore.js"></script>
+	<script src="http://documentcloud.github.com/backbone/backbone.js"></script>
+	<script src="http://github.com/janl/mustache.js/raw/master/mustache.js"></script>
+	<script src="b.js"></script>
+	
+	<script id="listview-template" type="x-ejs">
+	<ul class="listview" data-role="listview" data-theme="c">
+	  <% for(var i = 0; i < legislators.length; i++) { %>
+	    <li><a href='#index'><%= legislators.at(i).get('full_name') %></a></li>
+	  <% } %>
+	</ul>
+	</script>
+</head> 
 <body>
-  <div id="header">
-    <h1><a href="">Open State Project</a></h1>
+  
+  <div data-role="page" id="index">
+    <div data-role="header">
+      <h1>Open State Project</h1>
+    </div>
+
+    <div data-role="content">
+      <ul data-role="listview" data-theme="c">
+        <li><a href="#legislators">Legislators</a></li>
+        <li><a href="#bills">Bills</a></li>
+      </ul>
+    </div>
+
+    <div data-role="footer">
+    </div>
   </div>
-  <div id="content">
-    <ul id="nav" class="active">
-      <li><a href="#_upper">Senators</a></li>
-      <li><a href="#_lower">Assembly Members</a></li>
-      <li><a href="#_bill_search">Bill Search</a></li>
-      <li><a href="#_about">About</a></li>
-    </ul>
     
-    <div id="about" style="display:none;">
-      The Open State Project is an effort to collect legislative data from all fifty
-      US state legislatures and present it in a common format. This client can
-      be used to browse some of the available data.
-    </div>
-    
-    <div id="bill_search" style="display:none;">
-      <h2>Search:</h2> <input id="bill_query" type="text" />
-      <a href="#_bills"><button>Go</button></a>
+  <div data-role="page" id="legislators">
+    <div data-role="header">
+      <h1>This is the second header</h1>
     </div>
 
-    <ul id="bills" style="display:none;">
-    </ul>
-
-    <ul id="legs" style="display:none;">
-    </ul>
-    
-    <div id="leg_info" class="leg_info" style="display: none;">
-      <img id="leg_img" src="no_photo_male.png" />
-      <div>
-        <div><span class="leg_label">Name:</span> <span id="leg_name"></span></div>
-        <div><span class="leg_label">Party:</span> <span id="leg_party"></span></div>
-        <div><span class="leg_label">Chamber:</span> <span id="leg_chamber"></span></div>
-        <div><span class="leg_label">District:</span> <span id="leg_district"></span></div>
+    <div data-role="content">
+      <div data-role="fieldcontain">
+        <label for="select-choice-1" class="select">State:</label>
+        <select name="select-choice-1" id="select-choice-1" onclick="dostuff();">
+          <option value="ca">California</option>
+          <option value="tx">Texas</option>
+        </select>
+        
+        <a href="#legislator_list" data-role="button">Go</a>
       </div>
     </div>
+
+    <div data-role="footer">
+      <h4>This is not the footer</h4>
+    </div>
   </div>
+  
+  <div data-role="page" id="legislator_list">
+    <div data-role="header">
+      <h1>Legislators</h1>
+    </div>
+    
+    <div class="content" data-role="content">
+    </div>        
+  </div>
+
 </body>
 </html>
