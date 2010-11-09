@@ -11,13 +11,15 @@ $(window).hashchange(->
         for leg in data
           html = "<li>"
           if leg.photo_url
-            html += "<img src='" + leg.photo_url + "' />";
+            html += "<img src='" + leg.photo_url + "' />"
+          else
+            html += "<img src='/~mike/baiji/no_photo_male.png' />"
           html += "<div><a href='#index'>" + leg['full_name'] + "</a>"
           html += "<p class='ul-li-aside ul-li-desc'>" + leg.party + "</p></div>"
           html += "</li>"
 
           $("#legislator_listview").append(html)
 
-        $("#legislator_listview").listview()
+        $("#legislator_listview").listview('refresh')
       )
 )
