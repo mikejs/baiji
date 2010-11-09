@@ -1,7 +1,7 @@
 $(window).ready(function() {
 
     var Legislator = Backbone.Model.extend({});
-    
+
     var LegislatorStore = Backbone.Collection.extend({
         model: Legislator,
         url: 'http://openstates.sunlightlabs.com/api/v1/legislators/?apikey=sunlight9&callback=?',
@@ -27,7 +27,8 @@ $(window).ready(function() {
         }
     });
 
-    var legislators = new LegislatorStore([], {state: 'tx', chamber: 'upper'});
+    //var legislators = new LegislatorStore([], {state: 'tx', chamber: 'upper'});
+    var legislators;
 
     var LegislatorView = Backbone.View.extend({
         template: _.template($("#listview-template").html()),
@@ -48,6 +49,12 @@ $(window).ready(function() {
         },
 
         legislator_list: function() {
+            var state = $("#select-choice-1").val();
+            var chamber = $("#legislator-chamber-select").val();
+
+            legislators = new LegislatorStore([], {
+                state: state,
+                chamber: chamber});
             legislators.fetch({success: function() { view.render(); }});
         }
     });
