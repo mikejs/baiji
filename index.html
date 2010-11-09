@@ -68,6 +68,34 @@
       </ul>
     </div>        
   </div>
+  
+  <div data-role="page" id="bills">
+    <div data-role="header">
+      <h1>Bills</h1>
+    </div>
+    
+    <div data-role="content">
+      <div data-role="fieldcontain">
+        <label for="select-choice-2" class="select">State:</label>
+        <select name="select-choice-2" id="select-choice-2">
+          <option value="ca">California</option>
+          <option value="tx">Texas</option>
+        </select>
+        
+        <a href="#bill_list" data-role="button">Go</a>
+      </div>
+    </div>
+  </div>
+  
+  <div data-role="page" id="bill_list">
+    <div data-role="header">
+      <h1>Bills</h1>
+    </div>
+    
+    <div class="content" data-role="content">
+      <ul id="bill_listview" data-role="listview" data-theme="c">
+      </ul>
+    </div>
 
 </body>
 </html>
