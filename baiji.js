@@ -30,6 +30,10 @@ $(window).ready(function() {
 
             Backbone.sync('read', this, success, error);
             return this;
+        },
+
+        comparator: function(leg) {
+            return leg.get("last_name");
         }
     });
 
@@ -40,11 +44,7 @@ $(window).ready(function() {
         template: _.template($("#listview-template").html()),
 
         render: function() {
-            $(this.el).html(this.template({
-                legislators: legislators.sortBy(function(leg) {
-                    return leg.get('last_name');
-                })
-            }));
+            $(this.el).html(this.template({legislators: legislators}));
             this.$(".listview").listview();
 
             return this;

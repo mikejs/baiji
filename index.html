@@ -12,7 +12,7 @@
 	<script id="listview-template" type="x-ejs">
 	<ul class="listview" data-role="listview" data-theme="c">
 	  <% for(var i = 0; i < legislators.length; i++) { %>
-	    <% var leg = legislators[i]; %>
+	    <% var leg = legislators.at(i); %>
 	    <li>
 	        <img src='<%= leg.get("photo_url") %>' />
 	        <h1><a href='#index'><%= leg.get("full_name") %></a></h1>
