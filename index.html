@@ -16,7 +16,8 @@
 	    <% var leg = legislators[i]; %>
 	    <li>
 	        <img src='<%= leg.get("photo_url") %>' />
-	        <a href='#index'><%= leg.get("full_name") %></a>
+	        <h1><a href='#index'><%= leg.get("full_name") %></a></h1>
+	        <p><%= leg.get('party') %>, District <%= leg.get('district') %></p>
 	    </li>
 	  <% } %>
 	</ul>
