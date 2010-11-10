@@ -40,7 +40,11 @@ $(window).ready(function() {
         template: _.template($("#listview-template").html()),
 
         render: function() {
-            $(this.el).html(this.template({legislators: legislators}));
+            $(this.el).html(this.template({
+                legislators: legislators.sortBy(function(leg) {
+                    return leg.get('last_name');
+                })
+            }));
             this.$(".listview").listview();
 
             return this;
