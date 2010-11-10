@@ -15,12 +15,24 @@ $(window).ready(function() {
         initialize: function(models, options) {
             this.url = this.url + "&state=" + options.state + "&chamber=" +
                 options.chamber;
+            this.state = options.state;
+            this.chamber = options.chamber;
         },
 
         fetch: function(options) {
+            var cache_key = "LegislatorStore-" + this.state + "-" + this.chamber;
+            var cached = localStorage.getItem(cache_key);
+            if (cached) {
+                cached = $.parseJSON(cached);
+                this.refresh(cached);
+                if (options.success) options.success(this, cached);
+                return this;
+            }
+
             options || (options = {});
             var collection = this;
             var success = function(resp) {
+                localStorage.setItem(cache_key, JSON.stringify(resp));
                 collection.refresh(resp);
                 if (options.success) options.success(collection, resp);
             };
