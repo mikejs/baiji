@@ -1,6 +1,12 @@
 $(window).ready(function() {
 
-    var Legislator = Backbone.Model.extend({});
+    var Legislator = Backbone.Model.extend({
+        initialize: function(attributes) {
+            if (!this.get('photo_url')) {
+                this.set({'photo_url': 'no_photo_male.png'});
+            }
+        }
+    });
 
     var LegislatorStore = Backbone.Collection.extend({
         model: Legislator,
