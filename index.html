@@ -1,13 +1,12 @@
 <!DOCTYPE html> 
 <html> 
 	<head> 
-	<title>Page Title</title>
+	<title>Baiji</title>
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a1/jquery.mobile-1.0a1.min.css" />
 	<script src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
 	<script src="jquery.mobile.js"></script>
 	<script src="http://documentcloud.github.com/underscore/underscore.js"></script>
 	<script src="http://documentcloud.github.com/backbone/backbone.js"></script>
-	<script src="http://github.com/janl/mustache.js/raw/master/mustache.js"></script>
 	<script src="baiji.js"></script>
 	
 	<script id="listview-template" type="x-ejs">
@@ -39,14 +38,11 @@
         <li><a href="#bills">Bills</a></li>
       </ul>
     </div>
-
-    <div data-role="footer">
-    </div>
   </div>
     
   <div data-role="page" id="legislators">
     <div data-role="header">
-      <h1>This is the second header</h1>
+      <h1>Legislators</h1>
     </div>
 
     <div data-role="content">
@@ -65,10 +61,6 @@
         
         <a href="#legislator_list" data-role="button">Go</a>
       </div>
-    </div>
-
-    <div data-role="footer">
-      <h4>This is not the footer</h4>
     </div>
   </div>
   
@@ -110,6 +102,7 @@
       <ul id="bill_listview" data-role="listview" data-theme="c">
       </ul>
     </div>
+  </div>
 
 </body>
 </html>
